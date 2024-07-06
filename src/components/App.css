@@ -48,10 +48,7 @@ button {
   font-size: 16px;
   
 }
-ul {
-    list-style: none;
-    padding: 0;
-  }
+
 button:hover {
   background-color: #eff3f5;
 }
