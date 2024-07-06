@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
-import ContactForm from './ContactForm';
-import ContactList from './ContactList';
-import Filter from './Filter';
-import './App.css';
+import ContactForm from './ContactForm/ContactForm';
+import ContactList from './ContactList/ContactList';
+import Filter from './Filter/Filter';
+import PropTypes from 'prop-types';
+import styles from './App.module.css';
 
 export const App = () => {
   const [contacts, setContacts] = useState([
@@ -21,26 +22,17 @@ export const App = () => {
       number,
     };
 
-    const duplicateName = contacts.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
-    );
-
-    if (duplicateName) {
-      alert(`${name} is already in contacts`);
-      return;
-    }
-
     setContacts(prevContacts => [...prevContacts, contact]);
   };
 
-  const deleteContact = contactId => {
+  const deleteContact = id => {
     setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== contactId)
+      prevContacts.filter(contact => contact.id !== id)
     );
   };
 
-  const handleFilterChange = e => {
-    setFilter(e.target.value);
+  const handleFilterChange = event => {
+    setFilter(event.target.value);
   };
 
   const getFilteredContacts = () => {
@@ -50,26 +42,30 @@ export const App = () => {
     );
   };
 
-  const filteredContacts = getFilteredContacts();
-
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101',
-        flexDirection: 'column',
-        padding: '20px',
-      }}
-    >
+    <div className={styles.container}>
       <h1>Phonebook</h1>
-      <ContactForm addContact={addContact} />
+      <ContactForm onAddContact={addContact} />
+
       <h2>Contacts</h2>
       <Filter value={filter} onChange={handleFilterChange} />
-      <ContactList contacts={filteredContacts} onDelete={deleteContact} />
+      <ContactList
+        contacts={getFilteredContacts()}
+        onDeleteContact={deleteContact}
+      />
     </div>
   );
 };
+
+App.propTypes = {
+  contacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
+    })
+  ),
+  filter: PropTypes.string,
+};
+
+export default App;
